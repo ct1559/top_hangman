@@ -60,7 +60,7 @@ def load_specific_save(files)
   user_input = gets.chomp.to_i
   if files[user_input].nil?
     puts 'Invalid index, try again'.red
-    return load_specific_save
+    return load_specific_save(files)
   end
   load_save(files[user_input])
 end
