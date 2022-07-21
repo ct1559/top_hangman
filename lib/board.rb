@@ -9,7 +9,6 @@ class Board
 
   def generate_board(word)
     board_arr = []
-    board_arr.clear
     word.chars.each { board_arr.push(' _ ') }
     board_arr
   end

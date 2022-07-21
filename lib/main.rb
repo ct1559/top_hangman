@@ -33,22 +33,29 @@ def load_save
     word = rand_word
     start_game(word, Board.new(word), 0, [])
   when '2'
-    save_hash = read_save(saves.first)
-    board = Board.new(save_hash['word'])
-    save_hash['word'].chars.each_with_index do |char, index|
-      if save_hash['letters_guessed'].include?(char)
-        board.update_board(char, index)
-      else
-        board.update_board('_', index)
-      end
-    end
-    start_game(save_hash['word'], board, save_hash['guess_count'], save_hash['letters_guessed'])
+    load_last_save(saves)
   when '3'
     puts saves
   else
     puts "Invalid input, try again\n".red
     load_save
   end
+end
+
+def load_last_save(files)
+  save_hash = read_save(files.first)
+  board = Board.new(save_hash['word'])
+  save_hash['word'].chars.each_with_index do |char, index|
+    if save_hash['letters_guessed'].include?(char)
+      board.update_board(char, index)
+    else
+      board.update_board('_', index)
+    end
+  end
+  start_game(save_hash['word'], board, save_hash['guess_count'], save_hash['letters_guessed'])
+end
+
+def load_specific_save
 end
 
 def sort_saves
@@ -67,7 +74,8 @@ def play_again
   case user_input
   when 'y'
     word = rand_word
-    start_game(rand_word, Board.new(word), 0, [])
+    puts "New game start, the word is #{word}"
+    start_game(word, Board.new(word), 0, [])
   when 'n'
     puts "\nGoodbye!"
   else
