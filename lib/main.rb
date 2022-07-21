@@ -3,8 +3,6 @@ require_relative 'hangman'
 require 'colorize'
 
 def start_game(word, board, guess_count, letters_guessed)
-  # word = rand_word
-  # board = Board.new(word)
   game = Hangman.new(word, board, guess_count, letters_guessed)
   game.play
   play_again
@@ -23,7 +21,7 @@ def filter_word_list(list)
   list.select { |word| word.length.between?(5, 12) }
 end
 
-def load_save
+def start_options
   saves = sort_saves
   puts "\nMake choice:"
   puts "Input '1': new game\nInput '2': load most recent save\nInput '3': choose save".yellow
@@ -33,17 +31,17 @@ def load_save
     word = rand_word
     start_game(word, Board.new(word), 0, [])
   when '2'
-    load_last_save(saves)
+    load_save(saves.first)
   when '3'
-    puts saves
+    load_specific_save(saves)
   else
     puts "Invalid input, try again\n".red
     load_save
   end
 end
 
-def load_last_save(files)
-  save_hash = read_save(files.first)
+def load_save(file)
+  save_hash = read_save(file)
   board = Board.new(save_hash['word'])
   save_hash['word'].chars.each_with_index do |char, index|
     if save_hash['letters_guessed'].include?(char)
@@ -55,7 +53,16 @@ def load_last_save(files)
   start_game(save_hash['word'], board, save_hash['guess_count'], save_hash['letters_guessed'])
 end
 
-def load_specific_save
+def load_specific_save(files)
+  puts "\nChoose a file to load (input integer ID)".yellow
+  files.each_with_index { |file, index| puts index.to_s + "  #{file}".green }
+  puts "\n"
+  user_input = gets.chomp.to_i
+  if files[user_input].nil?
+    puts 'Invalid index, try again'.red
+    return load_specific_save
+  end
+  load_save(files[user_input])
 end
 
 def sort_saves
@@ -85,7 +92,7 @@ def play_again
 end
 
 if Dir.empty?('./saves/') == false
-  load_save
+  start_options
 else
   word = rand_word
   start_game(word, Board.new(word), 0, [])

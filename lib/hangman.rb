@@ -13,17 +13,12 @@ class Hangman
   end
 
   def play
-    puts @word
-    puts @guess_count
-    puts @game_over
-
     while @guess_count < 6 && @game_over == false
       puts "\nGuess Count: ".green + @guess_count.to_s + '   Remaining Guesses: '.green + (6 - @guess_count).to_s
       puts 'Guessed Letters: '.green + "#{@letters_guessed}\n"
       @board.game_board.each { |element| print element }
       puts "\n\n"
       guess = letter_or_word
-      # @letters_guessed.push(guess)
       if guess.length == 1
         check_letter(guess)
       else
@@ -105,7 +100,7 @@ class Hangman
     File.open("saves/save_#{Time.now}.json", 'w') do |f|
       f.write(current_state.to_json)
     end
-    puts 'saved the game!'
+    puts "\nsaved the game!"
     exit
   end
 

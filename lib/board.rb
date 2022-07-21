@@ -1,10 +1,9 @@
 # This class creates the game board
 class Board
-  attr_accessor :game_board, :correct_letter_count
+  attr_accessor :game_board
 
   def initialize(word)
     @game_board = generate_board(word)
-    # @correct_letter_count = 0
   end
 
   def generate_board(word)
@@ -15,6 +14,5 @@ class Board
 
   def update_board(letter, index)
     @game_board[index] = " #{letter} "
-    # @correct_letter_count += 1
   end
 end
