@@ -1,5 +1,6 @@
 require_relative 'board'
 require 'colorize'
+require 'json'
 
 # Hangman class is reposible for running game logic
 class Hangman
@@ -13,10 +14,12 @@ class Hangman
 
   def play
     puts @word
+    puts @guess_count
+    puts @game_over
 
     while @guess_count < 6 && @game_over == false
       puts "\nGuess Count: ".green + @guess_count.to_s + '   Remaining Guesses: '.green + (6 - @guess_count).to_s
-      puts 'Letters that have been guessed: '.green + "#{@letters_guessed}\n"
+      puts 'Guessed Letters: '.green + "#{@letters_guessed}\n"
       @board.game_board.each { |element| print element }
       puts "\n\n"
       guess = letter_or_word
@@ -28,7 +31,7 @@ class Hangman
       end
       @guess_count += 1
       unless @board.game_board.include?(' _ ')
-        puts "\nYou've found all the letters of the word!".green
+        puts "\nYou correctly guessed the word!".green
         @game_over = true
       end
     end
@@ -40,15 +43,18 @@ class Hangman
   end
 
   def letter_or_word
-    puts 'Input "1" to guess letter, input "2" to guess the word:'.yellow
+    puts 'Make Choice:'
+    puts "Input '1': guess letter\nInput '2': guess word\nInput '3': save game and exit:".yellow
     user_input = gets.chomp
     case user_input
     when '1'
       guess_letter
     when '2'
       guess_word
+    when '3'
+      save_game
     else
-      puts 'Invalid input, try again'.red
+      puts "Invalid input, try again\n".red
       letter_or_word
     end
   end
@@ -72,7 +78,7 @@ class Hangman
     user_input = gets.chomp.downcase
     if user_input.length != @word.length
       puts 'Invalid word length, try again'.red
-      guess_word
+      return guess_word
     end
     user_input
   end
@@ -87,11 +93,20 @@ class Hangman
 
   def check_word(word)
     if word == @word
-      puts 'You correctly guessed the word!'.green
       @game_over = true
+      word.chars.each_with_index { |char, index| @board.update_board(char, index) }
     else
-      puts 'That was not the correct word'.orange
+      puts 'That was not the correct word'
     end
+  end
+
+  def save_game
+    current_state = { 'word': @word, 'board': @board.game_board, 'guess_count': @guess_count, 'letters_guessed': @letters_guessed, 'game_over': @game_over }
+    File.open("saves/save_#{Time.now}.json", 'w') do |f|
+      f.write(current_state.to_json)
+    end
+    puts 'saved the game!'
+    exit
   end
 
 end
